@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trinidad Albina | Acceso Ω-4</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Manrope:wght@300;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- ESTILOS VISUALES --- */
+        :root {
+            --bg-deep: #020203;
+            --bg-card: rgba(15, 15, 20, 0.6);
+            --cyan: #00f0ff;
+            --red: #ff2a2a;
+            --silver: #e0e6ed;
+            --gold: #ffd700;
+            --purple: #bf00ff;
+            --font-main: 'Manrope', sans-serif;
+            --font-tech: 'Share Tech Mono', monospace;
+            --font-title: 'Cinzel', serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-deep) !important;
+            color: var(--silver);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        /* --- ORBES FLOTANTES --- */
+        .orb {
+            position: fixed; border-radius: 50%; filter: blur(90px); opacity: 0.3; z-index: -1;
+            animation: orbFloat 25s infinite alternate ease-in-out; pointer-events: none;
+        }
+        .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, var(--cyan), transparent 70%); }
+        .orb-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, #220033, transparent 70%); animation-delay: -5s; }
+        .orb-3 { top: 40%; left: 30%; width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(255, 42, 42, 0.1), transparent 70%); animation-duration: 35s; }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, 60px) scale(1.1); }
+            100% { transform: translate(-30px, -40px) scale(0.9); }
+        }
+
+        /* CAPAS DE FONDO */
+        .bg-layer { position: fixed; inset: 0; z-index: -3; background: #020202; }
+        .grid-layer { 
+            position: fixed; inset: 0; z-index: -2; opacity: 0.04; pointer-events: none;
+            background-image: linear-gradient(rgba(0, 240, 255, 0.3) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 240, 255, 0.3) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* NAVEGACIÓN */
+        .nav {
+            position: fixed; top: 0; width: 100%; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(2, 2, 3, 0.85); border-bottom: 1px solid rgba(0,240,255,0.2);
+            backdrop-filter: blur(12px); z-index: 1000;
+        }
+        .logo { font-family: var(--font-title); font-weight: 700; color: #fff; letter-spacing: 1px; }
+        .badge { background: #220000; color: var(--red); padding: 2px 6px; font-size: 0.6rem; border: 1px solid var(--red); margin-left: 5px; font-family: var(--font-tech); display: inline-block; }
+        .nav-link { 
+            text-decoration: none; color: var(--cyan); font-family: var(--font-tech); 
+            font-size: 0.75rem; border: 1px solid var(--cyan); padding: 8px 16px; 
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .nav-link:hover { background: var(--cyan); color: black; box-shadow: 0 0 20px var(--cyan); }
+
+        /* HERO SECTION */
+        .hero { 
+            min-height: 95vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center; padding: 120px 20px 40px; position: relative;
+        }
+        .hero h1 {
+            font-family: var(--font-title); font-size: clamp(2.5rem, 9vw, 5.5rem);
+            color: #fff; text-shadow: 0 0 35px rgba(255,255,255,0.1); line-height: 1.1; margin-bottom: 15px;
+            animation: floatText 7s ease-in-out infinite; 
+        }
+        .taxonomy { color: #888; font-family: var(--font-tech); margin-bottom: 40px; letter-spacing: 4px; font-size: 0.85rem; text-transform: uppercase; }
+
+        /* ESCÁNER */
+        .scanner-container {
+            width: 100%; max-width: 350px; background: rgba(10,10,15,0.4);
+            border: 1px solid #444; border-radius: 20px; padding: 40px 30px;
+            margin: 40px 0; position: relative; box-shadow: 0 0 80px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+            animation: floatCard 9s ease-in-out infinite reverse;
+        }
+        .fingerprint-btn {
+            width: 110px; height: 110px; margin: 0 auto 25px;
+            border: 2px dashed #666; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: 0.3s; user-select: none;
+        }
+        .fingerprint-btn:active { transform: scale(0.95); }
+        .fingerprint-btn svg { width: 60px; fill: #666; transition: 0.4s; }
+        
+        .fingerprint-btn.active { border-color: var(--cyan); box-shadow: 0 0 30px rgba(0, 240, 255, 0.3); background: rgba(0, 240, 255, 0.05); }
+        .fingerprint-btn.active svg { fill: var(--cyan); }
+        
+        .scan-laser {
+            position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--cyan); box-shadow: 0 0 20px var(--cyan); opacity: 0;
+        }
+        .fingerprint-btn.active .scan-laser { opacity: 1; animation: scanDown 1.3s infinite linear; }
+        @keyframes scanDown { 0% { top: -10%; } 100% { top: 110%; } }
+
+        /* ANIMACIONES FLOTANTES */
+        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes floatCard { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        /* CONTENIDO */
+        .container { max-width: 950px; margin: 0 auto; padding: 0 20px 100px; }
+        
+        .card { 
+            background: var(--bg-card); border: 1px solid rgba(255,255,255,0.06); 
+            padding: 40px; border-radius: 16px; margin-bottom: 60px; 
+            position: relative; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            animation: floatCard 12s ease-in-out infinite;
+        }
+        .card:nth-child(odd) { animation-delay: 1s; }
+        .card::before { content:''; position: absolute; left:0; top:0; height:100%; width:3px; background: linear-gradient(to bottom, var(--cyan), transparent); }
+        
+        h2 { font-family: var(--font-title); color: #fff; margin-bottom: 25px; font-size: 2rem; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
+        h3 { font-family: var(--font-tech); color: var(--cyan); margin: 35px 0 15px; font-size: 1.1rem; border-bottom: 1px solid #333; display: inline-block; padding-bottom: 5px; }
+        p { margin-bottom: 18px; color: #c0c0c0; font-size: 1.05rem; text-shadow: 0 2px 2px rgba(0,0,0,0.6); }
+        strong { color: #fff; font-weight: 700; }
+
+        /* INFOBOX */
+        .infobox { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; 
+            background: rgba(0,0,0,0.5); padding: 25px; border: 1px solid #333; margin-bottom: 30px; border-radius: 8px;
+        }
+        .info-item span { display: block; font-family: var(--font-tech); font-size: 0.75rem; color: #777; margin-bottom: 5px; letter-spacing: 1px; }
+        .info-item div { font-family: var(--font-main); font-weight: bold; color: #fff; font-size: 1.1rem; }
+
+        /* CITAS */
+        blockquote {
+            border-left: 4px solid var(--gold); background: linear-gradient(90deg, rgba(255, 215, 0, 0.08), transparent);
+            padding: 25px; margin: 30px 0; font-style: italic; color: #ffebcd; border-radius: 0 8px 8px 0;
+            animation: floatText 9s ease-in-out infinite;
+        }
+        blockquote footer { text-align: right; font-size: 0.85rem; color: var(--gold); margin-top: 15px; font-family: var(--font-tech); opacity: 0.8; }
+
+        /* LISTAS */
+        ul.tech-list { list-style: none; margin-top: 20px; }
+        ul.tech-list li { margin-bottom: 15px; padding-left: 25px; position: relative; color: #ddd; }
+        ul.tech-list li::before { content: '►'; position: absolute; left: 0; color: var(--cyan); font-size: 0.8rem; top: 4px; }
+
+        /* WARNING BOX */
+        .warning-box {
+            border: 1px solid var(--red); background: rgba(255, 42, 42, 0.08);
+            padding: 30px; text-align: center; margin-top: 50px; border-radius: 8px;
+            animation: floatCard 6s ease-in-out infinite;
+        }
+        .warning-text { color: var(--red); font-family: var(--font-tech); font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; display: block; }
+
+        /* RECLUTAMIENTO & REQUISITOS */
+        .recruit-section {
+            background: linear-gradient(180deg, rgba(0,0,0,0), #0a0a15); border-top: 1px solid #333;
+            padding: 80px 20px; text-align: center; margin-top: 100px; position: relative;
+        }
+        
+        .requirements-box {
+            text-align: left; background: rgba(0,0,0,0.5); border: 1px solid var(--cyan);
+            padding: 25px; border-radius: 8px; margin: 30px auto; max-width: 600px;
+            box-shadow: 0 0 20px rgba(0,240,255,0.1);
+        }
+        .req-list { list-style: none; padding: 0; margin: 0; }
+        .req-list li { 
+            margin-bottom: 10px; color: #ccc; font-size: 0.95rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;
+        }
+        .req-list li:last-child { border-bottom: none; }
+        .req-list li::before { content: '◈'; color: var(--cyan); margin-right: 10px; }
+
+        .fb-btn {
+            display: inline-flex; align-items: center; gap: 12px;
+            background: transparent; border: 1px solid var(--cyan); color: var(--cyan);
+            padding: 18px 40px; text-decoration: none; font-family: var(--font-tech);
+            text-transform: uppercase; font-weight: bold; margin-top: 30px;
+            transition: 0.3s; font-size: 1rem; letter-spacing: 2px;
+        }
+        .fb-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 40px var(--cyan); transform: translateY(-5px); }
+
+        /* VÉASE TAMBIÉN */
+        .see-also-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .see-btn {
+            display: block; text-align: center; border: 1px solid #444; padding: 15px; 
+            color: #888; text-decoration: none; font-family: var(--font-tech); transition: 0.3s;
+            background: rgba(0,0,0,0.3);
+        }
+        .see-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,240,255,0.05); }
+
+        /* MODAL */
+        .modal-wrap {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-wrap.open { display: flex; animation: fadeIn 0.3s; }
+        .modal-box {
+            background: #08080a; border: 1px solid #333; width: 100%; max-width: 650px;
+            max-height: 85vh; overflow-y: auto; padding: 40px; border-top: 4px solid var(--silver);
+            position: relative; box-shadow: 0 0 60px rgba(0,0,0,1);
+        }
+        
+        .secret-link { color: var(--silver); border-bottom: 1px dashed var(--silver); cursor: pointer; transition: 0.2s; }
+        .secret-link:hover { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); border-color: var(--cyan); }
+
+        /* TOAST DE ERROR */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: var(--red); color: #fff; text-align: center;
+            border-radius: 2px; padding: 16px; position: fixed; z-index: 5000; left: 50%; bottom: 30px;
+            transform: translateX(-50%); font-family: var(--font-tech); box-shadow: 0 0 20px var(--red); font-weight: bold;
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        
+        footer { text-align: center; padding: 50px 20px; color: #555; font-size: 0.8rem; border-top: 1px solid #111; font-family: var(--font-tech); letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+    <div class="grid-layer"></div>
+    
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div id="toast">ERROR 404: ARCHIVO EN CONSTRUCCIÓN</div>
+
+    <audio id="bgm" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <nav class="nav">
+        <div class="logo">FAKEPEDIA <span class="badge">Ω-4</span></div>
+        <a href="archivos.html" class="nav-link">ARCHIVOS SECRETOS ➜</a>
+    </nav>
+
+    <header class="hero">
+        <p class="taxonomy">HOMO CAELESTIS-LYCOVAMPIR</p>
+        <h1>TRINIDAD<br>ALBINA</h1>
+        <p style="color:#bbb; max-width:650px; font-size:1.2rem; animation: floatText 5s infinite;">Sincronía Astral detectada. La perfección biológica no sangra.</p>
+        
+        <div class="scanner-container">
+            <div style="font-family:var(--font-tech); color:#888; margin-bottom:20px; font-size:0.85rem; letter-spacing:2px;">VERIFICACIÓN GENÉTICA</div>
+            <div class="fingerprint-btn" id="scanBtn">
+                <div class="scan-laser"></div>
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.22-7.52-3.22 7.52 3.22z"/></svg>
+            </div>
+            <div id="scanText" style="font-family:var(--font-tech); font-weight:bold; font-size:0.9rem;">MANTÉN PRESIONADO</div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section class="card">
+            <h2>Resumen del Archivo</h2>
+            <div class="infobox">
+                <div class="info-item"><span>CLASIFICACIÓN</span><div>Entidad Trascendente</div></div>
+                <div class="info-item"><span>ORIGEN</span><div>1026 d.C. (Demian)</div></div>
+                <div class="info-item"><span>PROGENITOR</span><div><span class="secret-link" onclick="toggleModal()">DEMIAN (Ver Expediente)</span></div></div>
+                <div class="info-item"><span>POBLACIÓN</span><div>&lt; 100 (Estimado)</div></div>
+                <div class="info-item"><span>DEBILIDADES</span><div>Ninguna conocida</div></div>
+                <div class="info-item"><span>ARMA</span><div>La Sentencia del Vacío</div></div>
+            </div>
+            <p><strong>Nota del Archivero:</strong> La Trinidad Albina es la convergencia prohibida de tres linajes: vampírico, licántropo y divino. No es un mito; es la aristocracia invisible que ha gobernado desde las sombras.</p>
+        </section>
+
+        <section class="card" id="historia">
+            <h2>01. Historia y Origen Expandido</h2>
+            <p>Según el historiador ocultista <strong>Dr. Alistair Thorne</strong>, la especie no surgió por evolución, sino por un evento de <strong>"Sincronía Astral"</strong>.</p>
+            
+            <h3>El Primer Caso (1026 d.C.)</h3>
+            <p>El primer registro oficial es de <strong>Demian</strong> en los Balcanes. Descrito como un ser con la sed de un vampiro y la fuerza de un lobo, pero capaz de caminar bajo el sol sin daño gracias a su herencia divina.</p>
+            
+            <h3>La Aristocracia Secreta</h3>
+            <p>Durante mil años, han operado mediante rituales de linaje selectos, influyendo en guerras y monarquías para proteger sus intereses.</p>
+        </section>
+
+        <section class="card" id="biologia">
+            <h2>02. Biología y Fisiología</h2>
+            <p>Investigaciones de la <strong>Dra. Elena Vaskov</strong> revelan una estructura de ADN de <strong>triple hélice</strong> que anula la entropía celular.</p>
+            
+            <ul class="tech-list">
+                <li><strong>Albinismo Divino:</strong> Piel que absorbe radiación UV para fortalecer su núcleo interno.</li>
+                <li><strong>Ojos Grises:</strong> Visión multiespectral. Reflejan la luz como el acero.</li>
+                <li><strong>Inmunidad Total:</strong> Inmunes a la plata, el sol, el ajo y los símbolos religiosos. Regeneración instantánea.</li>
+                <li><strong>Gusto Artificial:</strong> Carecen de sentido del gusto, pero pueden simularlo mediante estimulación neuronal para mezclarse con humanos.</li>
+                <li><strong>Núcleo Trino:</strong> Centro espiritual donde convergen sus tres naturalezas.</li>
+            </ul>
+        </section>
+
+        <section class="card" id="arma">
+            <h2>03. La Sentencia del Vacío</h2>
+            <p>Un arma racial forjada con hierro meteórico, esencia vital y "materia del vacío". No corta el cuerpo, <strong>borra la existencia conceptual</strong> del objetivo.</p>
+            <p>Es la única arma conocida capaz de imponer autoridad sobre dioses y seres eternos.</p>
+        </section>
+
+        <section class="card" id="encuentros">
+            <h2>04. Encuentros Documentados</h2>
+            
+            <blockquote>
+                "Lo vi caminar por el campo de batalla en 1812. Las balas le atravesaban el abrigo, pero él seguía caminando... No era un hombre, era una estatua de mármol que repartía muerte."
+                <footer>— Capitán Jean-Pierre Valois</footer>
+            </blockquote>
+
+            <blockquote>
+                "En la Venecia de 1640... los perros no le ladraban; se arrodillaban cuando él pasaba."
+                <footer>— Inquisición Veneciana, Archivo 404-B</footer>
+            </blockquote>
+        </section>
+
+        <section class="card" id="cronologia">
+            <h2>05. Cronología Selecta</h2>
+            <ul class="tech-list">
+                <li><strong>1026:</strong> Aparición de Demian y establecimiento del linaje.</li>
+                <li><strong>1347:</strong> Peste Negra. La especie es inmune y adorada como "Ángeles de la Muerte".</li>
+                <li><strong>1888:</strong> Reforja del arma utilizando planos antiguos.</li>
+                <li><strong>2026:</strong> Milenio de la especie. Rumores de manifestación global inminente.</li>
+            </ul>
+        </section>
+
+        <section class="card" id="estructura">
+            <h2>06. Estructura y Jerarquía</h2>
+            <p>La especie se organiza en <strong>Tríadas</strong>: células de tres individuos que equilibran lo Divino, lo Bestial y lo Eterno.</p>
+            
+            <h3>El Cónclave de Marfil</h3>
+            <p>(Nuevo Registro) Se sospecha la existencia de un consejo superior de 5 ancianos que responden solo ante Demian.</p>
+
+            <div class="warning-box">
+                <span class="warning-text">⚠ PROTOCOLO DE INTERACCIÓN HUMANA</span>
+                <p style="margin-top:15px; color:#ffaaaa;">Cualquier intento de captura o estudio es un <strong>Evento de Extinción Local</strong>. No negocian. No temen. Si encuentras a uno, no corras. Acepta el juicio.</p>
+            </div>
+        </section>
+
+        <section class="card" id="teorias">
+            <h2>07. Teorías No Confirmadas</h2>
+            <ul class="tech-list">
+                <li>La Trinidad Albina no pertenece a este universo; son exiliados de una dimensión superior.</li>
+                <li>Demian sigue vivo y actúa como núcleo consciente de toda la especie.</li>
+                <li>La especie prepara un evento de revelación masiva para el año 2026.</li>
+            </ul>
+        </section>
+
+        <section class="card" id="rituales">
+            <h2>08. Rituales y Simbología</h2>
+            <p>Utilizan el símbolo de la <strong>Triple Hélice</strong> entrelazada. Sus rituales no usan sangre, sino luz pura y resonancia sónica. El "Rito de Ascensión" permite a un híbrido acceder a la memoria genética de sus ancestros.</p>
+        </section>
+
+        <section class="card" id="vease-tambien">
+            <h2>Véase También</h2>
+            <div class="see-also-grid">
+                <a href="archivos.html" class="see-btn">📂 ARCHIVOS PROFUNDOS</a>
+                <a href="reclutas.html" class="see-btn">👥 RECLUTAS (NUEVO)</a>
+            </div>
+        </section>
+
+        <section class="recruit-section">
+            <h2 style="font-family:var(--font-title); color:#fff; margin-bottom:15px; font-size:2.5rem;">¿ERES PARTE DEL LINAJE?</h2>
+            
+            <p style="color:#aaa; max-width:700px; margin:0 auto; font-size:1.1rem; margin-bottom: 20px;">
+                La Trinidad busca sangre compatible. Si sientes el llamado, revisa los requisitos antes de contactar.
+            </p>
+
+            <div class="requirements-box">
+                <h3 style="color:var(--cyan); border:none; margin-top:0; font-size:1rem;">REQUISITOS DE INICIACIÓN</h3>
+                <ul class="req-list">
+                    <li>Respeto absoluto a la jerarquía y a los participantes.</li>
+                    <li>Actividad requerida: Unas horas para socializar con la comunidad.</li>
+                    <li>Cumplimiento de las actividades asignadas.</li>
+                    <li>Compromiso real con la trama y el desarrollo de personaje.</li>
+                </ul>
+            </div>
+
+            <a href="https://www.facebook.com/demian.403329" target="_blank" class="fb-btn">
+                CONTACTAR AL PROGENITOR
+            </a>
+        </section>
+
+    </main>
+
+    <footer>
+        FAKPEDIA ARCHIVES | MONITOREADO POR XXI | 2026
+    </footer>
+
+    <div class="modal-wrap" id="modal">
+        <div class="modal-box">
+            <button onclick="toggleModal()" style="float:right; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;">×</button>
+            <div style="border:1px solid var(--red); color:var(--red); display:inline-block; padding:5px; font-family:var(--font-tech); margin-bottom:15px; font-size:0.8rem;">TOP SECRET // NIVEL 5</div>
+            <h2 style="font-family:var(--font-title); color:white; margin-bottom:5px;">EXPEDIENTE: DEMIAN</h2>
+            <p style="color:#888; font-family:var(--font-tech);">El Primogénito | Progenitor de Marfil</p>
+            <hr style="border-color:#333; margin:25px 0;">
+            
+            <p style="color:#ccc;"><strong>Biografía:</strong> Demian no nació, fue resultado de un ritual de "Transmutación Esencial" en 1026 dirigido por el Dios Traidor Malketh.</p>
+            
+            <h3 style="color:var(--cyan); font-size:1rem; border:none; margin-top:30px;">PODERES ÚNICOS</h3>
+            <ul class="tech-list" style="font-size:0.9rem;">
+                <li><strong>Negación de la Muerte:</strong> Inmune a armas divinas y plata.</li>
+                <li><strong>Comando Alfa:</strong> Control mental sobre razas inferiores.</li>
+                <li><strong>Vínculo con Malketh:</strong> Comunicación interdimensional.</li>
+            </ul>
+
+            <div style="background:rgba(255,0,0,0.1); border:1px solid var(--red); padding:15px; margin-top:30px; font-size:0.8rem; color:#faa; text-align:center;">
+                ⚠ <strong>ALERTA:</strong> Paradero desconocido. Posible preparación del Ritual del Milenio.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ESCÁNER
+        const btn = document.getElementById('scanBtn');
+        const txt = document.getElementById('scanText');
+        let timer;
+
+        const start = (e) => {
+            if(e.type === 'touchstart') e.preventDefault();
+            btn.classList.add('active');
+            txt.textContent = "ANALIZANDO ADN...";
+            txt.style.color = "#fff";
+            
+            timer = setTimeout(() => {
+                const win = Math.random() > 0.7; 
+                if(win) {
+                    txt.textContent = "SANGRE PURA DETECTADA";
+                    txt.style.color = "var(--cyan)";
+                } else {
+                    txt.textContent = "ACCESO DENEGADO: HUMANO";
+                    txt.style.color = "var(--red)";
+                }
+                btn.classList.remove('active');
+            }, 2000);
+        };
+
+        const stop = () => {
+            clearTimeout(timer);
+            btn.classList.remove('active');
+            if(txt.textContent === "ANALIZANDO ADN...") {
+                txt.textContent = "MANTÉN PRESIONADO";
+                txt.style.color = "#fff"; 
+            }
+        };
+
+        btn.addEventListener('mousedown', start);
+        btn.addEventListener('touchstart', start);
+        btn.addEventListener('mouseup', stop);
+        btn.addEventListener('touchend', stop);
+        btn.addEventListener('mouseleave', stop);
+
+        // MODAL
+        function toggleModal() {
+            const m = document.getElementById('modal');
+            m.classList.toggle('open');
+            if(m.classList.contains('open')) document.body.style.overflow = 'hidden';
+            else document.body.style.overflow = 'auto';
+        }
+        
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') toggleModal();
+        });
+
+        // TOAST ERROR MESSAGE
+        function showError(e) {
+            e.preventDefault();
+            const toast = document.getElementById('toast');
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // AUDIO AUTOMÁTICO (Hack para navegadores)
+        window.addEventListener('load', function() {
+            const audio = document.getElementById('bgm');
+            audio.volume = 0.5;
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    document.body.addEventListener('click', () => audio.play(), { once: true });
+                    document.body.addEventListener('touchstart', () => audio.play(), { once: true });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

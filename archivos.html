@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivos Clasificados | Nivel Ω-4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Manrope:wght@300;600&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS BASE --- */
+        :root { 
+            --bg: #050505; 
+            --green: #00ff41; 
+            --dim: #1a1a1a; 
+            --red: #ff2a2a;
+            --cyan: #00f0ff;
+            --gold: #ffd700; /* Nuevo color para los VIP */
+            --paper: #f0f0f0;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg) !important; color: #ccc;
+            font-family: 'Manrope', sans-serif; margin: 0; padding: 0;
+            background-image: radial-gradient(rgba(0, 50, 0, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow-x: hidden;
+            transition: filter 0.5s;
+        }
+
+        /* EFECTO GLITCH GENERAL */
+        .glitch-text { animation: glitch 3s infinite; }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            2% { transform: translate(-2px, 2px); }
+            4% { transform: translate(2px, -2px); }
+            6% { transform: translate(0); }
+            100% { transform: translate(0); }
+        }
+
+        /* HEADER */
+        .top-bar {
+            position: fixed; top: 0; width: 100%; padding: 15px; background: rgba(5,5,5,0.95);
+            border-bottom: 1px solid var(--green); display: flex; justify-content: space-between;
+            align-items: center; z-index: 100;
+        }
+        .back-btn {
+            color: var(--green); text-decoration: none; border: 1px solid var(--green);
+            padding: 5px 15px; font-family: 'Share Tech Mono'; font-weight: bold;
+            text-transform: uppercase; font-size: 0.8rem;
+        }
+
+        .container { max-width: 850px; margin: 80px auto 100px; padding: 20px; }
+        h1 { font-family: 'Share Tech Mono'; color: #fff; border-left: 4px solid var(--green); padding-left: 15px; margin: 40px 0 20px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* NIVELES DE ACCESO */
+        .level-tag { font-family: 'Share Tech Mono'; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 10px; vertical-align: middle; }
+        .l1 { background: rgba(0, 255, 65, 0.2); color: var(--green); border: 1px solid var(--green); }
+        .l2 { background: rgba(255, 255, 0, 0.2); color: yellow; border: 1px solid yellow; }
+        .l3 { background: rgba(255, 42, 42, 0.2); color: var(--red); border: 1px solid var(--red); animation: pulseRed 2s infinite; }
+
+        /* CARPETAS */
+        details { background: rgba(20,20,20,0.8); border: 1px solid #333; margin-bottom: 15px; }
+        summary { padding: 15px; cursor: pointer; font-family: 'Share Tech Mono'; color: var(--green); list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .content { padding: 20px; border-top: 1px solid #333; font-size: 0.9rem; line-height: 1.6; }
+        
+        /* CENSURA */
+        .redacted { background: #ccc; color: transparent; user-select: none; }
+        .keyword { border-bottom: 1px dotted var(--cyan); cursor: help; position: relative; }
+        .keyword:hover::after {
+            content: " RELACIONADO "; position: absolute; bottom: 100%; left: 0;
+            background: var(--cyan); color: #000; font-size: 0.7rem; padding: 2px;
+            font-family: 'Share Tech Mono'; white-space: nowrap;
+        }
+
+        /* ARCHIVO CORRUPTO */
+        details.corrupt[open] .content { animation: corruptShake 0.2s infinite; color: var(--red); font-family: 'Share Tech Mono'; }
+        @keyframes corruptShake { 0% { transform: translateX(0); } 25% { transform: translateX(2px); } 75% { transform: translateX(-2px); } }
+
+        /* LÍNEA DE TIEMPO */
+        .timeline { border-left: 2px solid var(--green); padding-left: 20px; margin: 30px 0; }
+        .event { margin-bottom: 25px; position: relative; }
+        .event::before { content: ''; position: absolute; left: -26px; top: 5px; width: 10px; height: 10px; background: var(--bg); border: 2px solid var(--green); border-radius: 50%; }
+        .date { color: var(--cyan); font-family: 'Share Tech Mono'; font-weight: bold; }
+
+        /* BESTIARIO (ENTIDADES) */
+        .entity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .entity-card { border: 1px solid #444; padding: 15px; background: #0a0a0a; text-align: center; transition: 0.3s; }
+        .entity-card:hover { border-color: var(--red); box-shadow: 0 0 15px rgba(255,42,42,0.2); }
+        .threat-level { display: block; font-size: 0.7rem; margin-top: 5px; font-family: 'Share Tech Mono'; }
+
+        /* DOCUMENTO FILTRADO */
+        .paper-doc {
+            background: #dcdcdc; color: #111; padding: 30px; font-family: 'Special Elite', cursive;
+            transform: rotate(-1deg); margin: 40px 0; border: 1px solid #999; position: relative;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        }
+        .stamp {
+            position: absolute; top: 10px; right: 20px; border: 4px solid rgba(255,0,0,0.6);
+            color: rgba(255,0,0,0.6); font-family: 'Share Tech Mono'; font-weight: bold;
+            font-size: 1.5rem; padding: 5px 10px; transform: rotate(15deg);
+        }
+
+        /* --- NUEVO: TERMINAL DE LOGIN --- */
+        .locked-section { border: 2px dashed var(--red); padding: 30px; text-align: center; margin-top: 40px; background: rgba(10,0,0,0.5); }
+        .lock-title { color: var(--red); font-family: 'Share Tech Mono'; font-size: 1.2rem; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; width: 80%; margin-left: auto; margin-right: auto; }
+        .input-group label { font-family: 'Share Tech Mono'; font-size: 0.8rem; color: #666; display: block; margin-bottom: 5px; }
+        .lock-input { 
+            background: #000; border: 1px solid #444; color: var(--green); padding: 12px; 
+            font-family: 'Share Tech Mono'; width: 100%; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .lock-input:focus { border-color: var(--red); outline: none; }
+        .lock-btn { 
+            background: var(--red); color: #000; border: none; padding: 12px 30px; cursor: pointer; 
+            font-weight: bold; font-family: 'Share Tech Mono'; margin-top: 10px; transition: 0.3s;
+        }
+        .lock-btn:hover { background: #fff; box-shadow: 0 0 15px var(--red); }
+        
+        /* --- NUEVO: ZONA DE LOS 10 SUCESORES (OCULTA) --- */
+        #hidden-zone { display: none; margin-top: 30px; border-top: 2px solid var(--cyan); padding-top: 20px; animation: slideOpen 1s ease; }
+        .successor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .successor-card { 
+            background: rgba(0, 20, 30, 0.8); border-left: 3px solid var(--cyan); padding: 15px; 
+        }
+        .succ-year { color: var(--cyan); font-family: 'Share Tech Mono'; font-size: 0.8rem; }
+        .succ-name { color: #fff; font-weight: bold; font-size: 1.1rem; margin: 5px 0; text-transform: uppercase; }
+        .succ-desc { font-size: 0.8rem; color: #888; }
+
+        /* META MENSAJES (SISTEMA) */
+        #meta-msg {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); border: 1px solid var(--cyan); color: var(--cyan);
+            padding: 10px 20px; font-family: 'Share Tech Mono'; font-size: 0.8rem;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s; z-index: 200;
+        }
+
+        /* BOTÓN EMERGENCIA */
+        .panic-btn {
+            position: fixed; bottom: 20px; right: 20px; background: #000; border: 2px solid var(--red);
+            color: var(--red); width: 40px; height: 40px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer;
+            z-index: 999; transition: 0.3s;
+        }
+        .panic-btn:hover { background: var(--red); color: #000; box-shadow: 0 0 20px var(--red); }
+
+        /* MODO PÁNICO */
+        body.panic-mode { background-color: #220000 !important; filter: contrast(1.5); }
+        body.panic-mode h1, body.panic-mode summary { color: var(--red) !important; }
+        body.panic-mode .back-btn { border-color: var(--red); color: var(--red); }
+        
+        /* FINAL OCULTO */
+        #hidden-ending {
+            position: fixed; inset: 0; background: #000; z-index: 5000; display: none;
+            flex-direction: column; align-items: center; justify-content: center; text-align: center;
+            padding: 20px;
+        }
+
+        @keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes slideOpen { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <audio id="ambiance" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="meta-msg">SISTEMA: Te estamos observando...</div>
+
+    <div class="top-bar">
+        <a href="index.html" class="back-btn">⬅ Desconectar</a>
+        <span style="color:var(--green); font-family:'Share Tech Mono'; font-size:0.7rem;">IP: ENMASCARADA</span>
+    </div>
+
+    <main class="container">
+        
+        <h1>CRONOLOGÍA OCULTA</h1>
+        <div class="timeline">
+            <div class="event">
+                <div class="date">1347 - VATICANO</div>
+                <p>La Peste Negra ignora a la <span class="keyword">Trinidad</span>. Pacto secreto con el Papa Clemente VI.</p>
+            </div>
+            <div class="event">
+                <div class="date">1600 - KIOTO</div>
+                <p>Intervención en Sekigahara. El "Demonio Blanco" protege el linaje imperial.</p>
+            </div>
+            <div class="event">
+                <div class="date">1908 - TUNGUSKA</div>
+                <p>Uso de arma racial. Eliminación de entidad dimensional clase-K.</p>
+            </div>
+            <div class="event">
+                <div class="date">2003 - GENOMA</div>
+                <p>Sabotaje del Mapa Humano. ADN híbrido clasificado como "basura".</p>
+            </div>
+            <div class="event">
+                <div class="date" style="color:var(--red)">2026 - [DATOS BORRADOS]</div>
+                <p>La Convergencia. El fin de la ocultación.</p>
+            </div>
+        </div>
+
+        <h1>REGISTROS DE CAMPO</h1>
+
+        <details>
+            <summary>📁 AVISTAMIENTO VENECIA <span class="level-tag l1">NIVEL 1</span></summary>
+            <div class="content">
+                <p>Sujeto noble inmune a crucifijos. Los animales mostraban sumisión absoluta. <br>Estado: <strong>Confirmado</strong>.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>📁 AUTOPSIA FALLIDA 1945 <span class="level-tag l2">NIVEL 2</span></summary>
+            <div class="content">
+                <p>Sujeto capturado en Berlín. Al intentar incisión, el bisturí se <span class="redacted">rompió al contacto</span>. El sujeto despertó y <span class="redacted">eliminó a todo el equipo</span> en 3 segundos.</p>
+            </div>
+        </details>
+
+        <details class="corrupt" id="corrupt-file">
+            <summary style="color:var(--red)">⚠ PROYECCIÓN FUTURA <span class="level-tag l3">CORRUPTO</span></summary>
+            <div class="content">
+                <p>E̷L̴L̴O̷S̸ ̸Y̵A̴ ̸E̴S̸T̴Á̸N̴ ̸A̷Q̸U̵Í̸... 01001001 00100000 01010011 01000101 01000101 00100000 01011001 01001111 01010101</p>
+                <p>SISTEMA: ERROR CRÍTICO. ENTIDAD DETECTADA EN SU UBICACIÓN.</p>
+            </div>
+        </details>
+
+        <div class="paper-doc">
+            <div class="stamp">TOP SECRET</div>
+            <p style="text-align:center; border-bottom:1px solid #000; margin-bottom:10px;">DEPARTAMENTO DE DEFENSA - MEMO #882</p>
+            <p><strong>ASUNTO:</strong> PROYECTO MARFIL</p>
+            <p>Se ha confirmado la infiltración en el G-20. Los objetivos no responden a la diplomacia. Su biología es superior a cualquier patógeno conocido.</p>
+            <p>ORDEN: Si encuentra a uno, NO INICIE COMBATE. Repito: NO INICIE COMBATE.</p>
+            <p style="text-align:right;">Firma: General ██████</p>
+        </div>
+
+        <h1>ENTIDADES CONOCIDAS</h1>
+        <div class="entity-grid">
+            <div class="entity-card">
+                <div style="font-size:2rem;">🐺</div>
+                <strong>DEMIAN</strong>
+                <span class="threat-level" style="color:var(--red)">AMENAZA: Ω (EXTREMA)</span>
+            </div>
+            <div class="entity-card">
+                <div style="font-size:2rem;">👁️</div>
+                <strong>EL OBSERVADOR</strong>
+                <span class="threat-level" style="color:yellow">AMENAZA: β (VIGILANCIA)</span>
+            </div>
+            <div class="entity-card">
+                <div style="font-size:2rem;">⚔️</div>
+                <strong>EJECUTOR IV</strong>
+                <span class="threat-level" style="color:var(--red)">AMENAZA: α (LETAL)</span>
+            </div>
+        </div>
+
+        <h1>REGISTRO DE LINAJES</h1>
+        <div class="locked-section" id="lock-zone">
+            <div class="lock-title">🔒 ACCESO RESTRINGIDO: NIVEL 5</div>
+            <p style="font-size:0.8rem; margin-bottom:20px; font-family:'Share Tech Mono'">SOLO PERSONAL CON AUTORIZACIÓN "VALHALLA" PUEDE ACCEDER A LA LISTA DE SUCESORES.</p>
+            
+            <div class="input-group">
+                <label>USUARIO:</label>
+                <input type="text" class="lock-input" id="login-user" placeholder="USUARIO...">
+            </div>
+            <div class="input-group">
+                <label>CONTRASEÑA:</label>
+                <input type="password" class="lock-input" id="login-pass" placeholder="PASSWORD...">
+            </div>
+            
+            <button class="lock-btn" onclick="attemptLogin()">AUTORIZAR ACCESO</button>
+            <p id="login-msg" style="height:20px; margin-top:10px; font-family:'Share Tech Mono'; color:var(--red); font-weight:bold;"></p>
+        </div>
+
+        <div id="hidden-zone">
+            <h2 style="color:var(--cyan); font-family:'Share Tech Mono'; border-bottom:1px solid var(--cyan); padding-bottom:10px;">EL DECÁLOGO DE SANGRE</h2>
+            <p style="color:#aaa; font-size:0.8rem; margin-bottom:20px;">> ARCHIVO DESENCRIPTADO. LISTA DE SUCESORES CONFIRMADOS POST-1026.</p>
+            
+            <div class="successor-grid">
+                <div class="successor-card">
+                    <div class="succ-year">1190 d.C.</div>
+                    <div class="succ-name">LYSANDER</div>
+                    <div class="succ-desc">"El Cruzado". Visto en Jerusalén ignorando las flechas sarracenas.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1348 d.C.</div>
+                    <div class="succ-name">ELARA</div>
+                    <div class="succ-desc">Conocida como "La Peste". Caminaba entre los muertos sin enfermar.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1520 d.C.</div>
+                    <div class="succ-name">VORIAN</div>
+                    <div class="succ-desc">Asesor en la sombra de Solimán el Magnífico.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1666 d.C.</div>
+                    <div class="succ-name">SERAPHINA</div>
+                    <div class="succ-desc">Observadora del Gran Incendio de Londres. Se dice que lo inició.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1789 d.C.</div>
+                    <div class="succ-name">KAEL</div>
+                    <div class="succ-desc">Instigador silencioso de la Revolución Francesa.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1812 d.C.</div>
+                    <div class="succ-name">VIKTOR</div>
+                    <div class="succ-desc">El "Oficial de Blanco" de las Guerras Napoleónicas.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1888 d.C.</div>
+                    <div class="succ-name">ISOLDE</div>
+                    <div class="succ-desc">Cazadora de criaturas inferiores en las calles de Whitechapel.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1945 d.C.</div>
+                    <div class="succ-name">JULIAN</div>
+                    <div class="succ-desc">Recuperador de artefactos ocultistas en el búnker de Berlín.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">1986 d.C.</div>
+                    <div class="succ-name">CASSANDRA</div>
+                    <div class="succ-desc">La física que cerró el portal dimensional de Chernobyl.</div>
+                </div>
+                <div class="successor-card">
+                    <div class="succ-year">2001 d.C.</div>
+                    <div class="succ-name">NEXUS</div>
+                    <div class="succ-desc">El arquitecto de la vigilancia digital global. Paradero: La Red.</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="panic-btn" onclick="triggerPanic()">☠️</div>
+
+    <div id="hidden-ending">
+        <h1 style="color:var(--green); border:none;">LA VERDAD REVELADA</h1>
+        <p style="max-width:600px; line-height:1.6; font-family:'Share Tech Mono';">
+            Has buscado donde nadie mira. Has escuchado el silencio.<br><br>
+            La Trinidad Albina no es una historia.<br>
+            Es una advertencia.<br><br>
+            Bienvenido al Nuevo Mundo, XXI.
+        </p>
+    </div>
+
+    <script>
+        // 1. Audio Ambiental
+        const audio = document.getElementById('ambiance');
+        audio.volume = 0.3; 
+        
+        document.body.addEventListener('click', () => {
+            if(audio.paused) {
+                audio.play();
+            }
+        }, { once: true });
+
+        // 2. Archivo Corrupto
+        const corruptFile = document.getElementById('corrupt-file');
+        corruptFile.addEventListener('toggle', () => {
+            if (corruptFile.open) {
+                setTimeout(() => {
+                    corruptFile.open = false;
+                    showMetaMsg("ERROR: ENTIDAD RECHAZÓ EL ACCESO.");
+                }, 1500); 
+            }
+        });
+
+        // 3. NUEVO: SISTEMA DE LOGIN (VAL1LO / DOWN)
+        function attemptLogin() {
+            const user = document.getElementById('login-user').value.toUpperCase();
+            const pass = document.getElementById('login-pass').value.toUpperCase();
+            const msg = document.getElementById('login-msg');
+            const lockZone = document.getElementById('lock-zone');
+            const hiddenZone = document.getElementById('hidden-zone');
+
+            if (user === "VAL1LO" && pass === "DOWN") {
+                msg.style.color = "var(--green)";
+                msg.innerText = "ACCESO CONCEDIDO. DESCIFRANDO...";
+                
+                // Efecto de carga
+                setTimeout(() => {
+                    lockZone.style.display = 'none';
+                    hiddenZone.style.display = 'block';
+                    showMetaMsg("BIENVENIDO, OPERADOR VAL1LO.");
+                    // Scroll automático hacia abajo
+                    hiddenZone.scrollIntoView({ behavior: 'smooth' });
+                }, 1500);
+            } else {
+                msg.style.color = "var(--red)";
+                msg.innerText = "ERROR: CREDENCIALES INVÁLIDAS.";
+                // Temblor visual
+                lockZone.style.animation = "corruptShake 0.3s";
+                setTimeout(() => lockZone.style.animation = "", 300);
+            }
+        }
+
+        // 4. Meta Mensajes
+        const metaMsgs = [
+            "Te están mirando.",
+            "No confíes en el texto.",
+            "Están rastreando tu IP...",
+            "Deja de buscar.",
+            "Demian sabe que estás aquí."
+        ];
+        
+        function showMetaMsg(text = null) {
+            const box = document.getElementById('meta-msg');
+            box.innerText = text || metaMsgs[Math.floor(Math.random() * metaMsgs.length)];
+            box.style.opacity = 1;
+            setTimeout(() => { box.style.opacity = 0; }, 4000);
+        }
+        setInterval(() => showMetaMsg(), 20000);
+
+        // 5. Modo Emergencia
+        function triggerPanic() {
+            document.body.classList.toggle('panic-mode');
+            const h1s = document.querySelectorAll('h1');
+            const panicState = document.body.classList.contains('panic-mode');
+            
+            if(panicState) {
+                h1s.forEach(h => h.innerText = "¡BRECHA DE SEGURIDAD!");
+                showMetaMsg("¡CORRE!");
+                audio.playbackRate = 0.5; 
+            } else {
+                location.reload(); 
+            }
+        }
+
+        // 6. Final Oculto
+        setTimeout(() => {
+            const ending = document.getElementById('hidden-ending');
+            ending.style.display = 'flex';
+            audio.volume = 0.1;
+        }, 90000); 
+    </script>
+</body>
+</html>

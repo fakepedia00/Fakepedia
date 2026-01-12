@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Reclutas | Ω-4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Manrope:wght@300;600;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS BASE (Igual al Index) --- */
+        :root { 
+            --bg: #020202; 
+            --green: #00ff41; 
+            --dim: #333; 
+            --red: #ff2a2a;
+            --cyan: #00f0ff;
+            --silver: #e0e6ed;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg) !important; color: #ccc;
+            font-family: 'Manrope', sans-serif; 
+            background-image: linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ORBES DE FONDO */
+        .orb {
+            position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.2; z-index: -1;
+            animation: orbFloat 20s infinite alternate ease-in-out;
+        }
+        .orb-1 { top: -20%; left: -10%; width: 60vw; height: 60vw; background: var(--cyan); }
+        .orb-2 { bottom: -20%; right: -10%; width: 50vw; height: 50vw; background: #220033; animation-delay: -5s; }
+        
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 40px); }
+        }
+
+        /* HEADER */
+        .top-bar {
+            position: fixed; top: 0; width: 100%; padding: 20px; background: rgba(2,2,5,0.9);
+            border-bottom: 1px solid var(--cyan); display: flex; justify-content: space-between;
+            align-items: center; z-index: 100; backdrop-filter: blur(10px);
+        }
+        .back-btn {
+            color: var(--cyan); text-decoration: none; border: 1px solid var(--cyan);
+            padding: 8px 20px; font-family: 'Share Tech Mono'; font-weight: bold;
+            text-transform: uppercase; font-size: 0.8rem; transition: 0.3s;
+        }
+        .back-btn:hover { background: var(--cyan); color: black; box-shadow: 0 0 20px var(--cyan); }
+
+        .container { max-width: 900px; margin: 100px auto 50px; padding: 20px; text-align: center; }
+
+        /* TÍTULO PRINCIPAL */
+        h1 { 
+            font-family: 'Cinzel', serif; color: #fff; font-size: 2.5rem; 
+            margin-bottom: 10px; text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        .sub-header {
+            font-family: 'Share Tech Mono'; color: var(--red); letter-spacing: 2px;
+            margin-bottom: 50px; font-size: 0.9rem; animation: blink 2s infinite;
+        }
+
+        /* ESTADO VACÍO (EMPTY STATE) */
+        .empty-state {
+            border: 2px dashed #333; background: rgba(255,255,255,0.02);
+            padding: 60px 20px; border-radius: 12px; margin-bottom: 50px;
+            position: relative; overflow: hidden;
+        }
+        .empty-icon {
+            font-size: 4rem; color: #333; margin-bottom: 20px; display: block;
+        }
+        .glitch-text {
+            font-family: 'Share Tech Mono'; font-size: 1.5rem; color: #666;
+            text-transform: uppercase; margin-bottom: 10px;
+        }
+        .empty-desc { color: #888; font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+
+        /* GRID DE SLOTS VACÍOS */
+        .slots-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px; opacity: 0.5; margin-bottom: 50px;
+        }
+        .slot {
+            border: 1px solid #222; background: #050505; height: 100px;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; border-radius: 4px;
+        }
+        .slot span { font-family: 'Share Tech Mono'; color: #333; font-size: 0.7rem; }
+        .slot-icon { color: #222; font-size: 1.5rem; margin-bottom: 5px; }
+
+        /* LLAMADO A LA ACCIÓN */
+        .cta-section {
+            background: linear-gradient(180deg, transparent, rgba(0, 240, 255, 0.05));
+            border-top: 1px solid var(--cyan); padding: 50px 20px;
+        }
+        .cta-text { font-size: 1.2rem; color: #fff; margin-bottom: 30px; }
+        
+        .join-btn {
+            display: inline-block; background: transparent; border: 2px solid var(--cyan);
+            color: var(--cyan); padding: 15px 40px; font-family: 'Share Tech Mono';
+            font-weight: bold; font-size: 1.1rem; text-decoration: none; letter-spacing: 2px;
+            transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .join-btn:hover {
+            background: var(--cyan); color: #000; box-shadow: 0 0 50px var(--cyan);
+            transform: scale(1.05);
+        }
+
+        /* ANIMACIONES */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <audio id="bgm" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="top-bar">
+        <a href="index.html" class="back-btn">⬅ Volver al Index</a>
+        <span style="color:var(--cyan); font-family:'Share Tech Mono'; font-size:0.7rem;">BASE DE DATOS: ACTIVA</span>
+    </div>
+
+    <main class="container">
+        <h1>REGISTRO DE INICIADOS</h1>
+        <div class="sub-header">ESTADO: SIN REGISTROS CONFIRMADOS // NIVEL 0</div>
+
+        <div class="empty-state">
+            <span class="empty-icon">∅</span>
+            <div class="glitch-text">BASE DE DATOS PURGADA</div>
+            <p class="empty-desc">
+                No hay reclutas registrados en este ciclo. La Trinidad ha reiniciado el conteo.
+                Los asientos están vacíos, esperando a aquellos con sangre compatible.
+            </p>
+        </div>
+
+        <div class="slots-grid">
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 001</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 002</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 003</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 004</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 005</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 006</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 007</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 008</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 009</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 010</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 011</span></div>
+            <div class="slot"><div class="slot-icon">?</div><span>VACÍO - ID 012</span></div>
+        </div>
+
+        <section class="cta-section">
+            <p class="cta-text">Tu nombre podría estar escrito aquí.</p>
+            <p style="color:#888; margin-bottom:30px; font-size:0.9rem;">
+                Si cumples con los requisitos, reclama tu lugar en la historia.
+            </p>
+            <a href="https://www.facebook.com/demian.403329" target="_blank" class="join-btn">
+                CONVIÉRTETE EN RECLUTA
+            </a>
+        </section>
+
+    </main>
+
+    <script>
+        // AUDIO AUTOMÁTICO (Igual que en el index para consistencia)
+        window.addEventListener('load', function() {
+            const audio = document.getElementById('bgm');
+            audio.volume = 0.5;
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    document.body.addEventListener('click', () => audio.play(), { once: true });
+                    document.body.addEventListener('touchstart', () => audio.play(), { once: true });
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
